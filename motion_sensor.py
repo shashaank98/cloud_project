@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+
 import os
 import asyncio
 import random
@@ -318,7 +319,7 @@ async def main():
     #     print(data.decode("utf-8"))
 
     async def send_telemetry():
-        print("Sending telemetry for temperature")
+        print("Sending telemetry for occupancy")
         global max_temp
         global min_temp
         current_avg_idx = 0
@@ -345,7 +346,9 @@ async def main():
             
             motion_c = motion_count
             temperature_msg1 = {"Number of People in the Room": motion_count}
+
             ##################
+
             url2 = "http://54.226.1.229:5000/device-network-mapping/3"
             # url = "http://54.204.76.18:8085/peer/putData?sensorType=temperature&value=11&onOff=on"
 
@@ -361,31 +364,36 @@ async def main():
             for i in data:
                 ip_list.append(i['ip'])
                 port_list.append(i['port'])
-         
-            print(ip_list)
-            print(port_list)
-            print(type(ip_list))
-            print(type(port_list))
 
             for i in range(len(ip_list)):
-                print(ip_list[i])
-                print(port_list[i])
-
                 status = ""
                 if motion_count > 0:
                     status = "on"
                 else:
                     status = "off"
-
-                url = "http://" + ip_list[i] + ":" + port_list[i] + "/peer/putData?sensorType=motion&value=" + motion_count + "&onOff=" + status
+                url = "http://" + ip_list[i] + ":" + port_list[i] + "/peer/putData?sensorType=motion&value="+ str(motion_count) +"&onOff=" + status + "&device=sensor"
+                print(url)
                 payload = {}
                 headers = {}
 
                 response = requests.request("PUT", url, headers=headers, data=payload)
 
             print("current occupancy: ", motion_count)
+
+            ###############################
+            # url = "http://54.204.76.18:8085/peer/putData?sensorType=temperature&value=11&onOff=on"
+
+            # payload = {}
+            # headers = {}
+
+            # response = requests.request("PUT", url, headers=headers, data=payload)
+
+            # print(response.text)
+            # asyncio.run(putSensorData("54.204.76.18", "8085", "temperature", "11", "on"))
+            
+            ##################
             await send_telemetry_from_thermostat(device_client, temperature_msg1, val)
-            await asyncio.sleep(8)
+            await asyncio.sleep(3)
 
     send_telemetry_task = asyncio.create_task(send_telemetry())
     # send_data_taks = asyncio.create_task(send_data(motion_c))

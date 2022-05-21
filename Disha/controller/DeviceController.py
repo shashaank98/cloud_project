@@ -4,10 +4,12 @@ from dao.DeviceDao import DeviceDao
 
 
 class DeviceController(Resource):
+    #Get a Device
     def get(self, device_id):
         device = DeviceDao.get_device_by_id(device_id)
         return ApplicationError.INVALID_DEVICE_ID.build() if device is None else device
 
+    #Create a Device
     def post(self):
         device = request.get_json()
         device_id = device.get("id")

@@ -329,14 +329,12 @@ async def main():
             global_temp = curr_temp
             temperature_msg1 = {"temperature": curr_temp}
 
-            ###################
-
             url2 = "http://54.226.1.229:5000/device-network-mapping/4"
-
             payload = {}
             headers = {}
-
             response = requests.request("GET", url2, headers=headers, data=payload)
+            print(response)
+            print(type(response))
             data = response.json()
             ip_list = []
             port_list = []
@@ -348,12 +346,10 @@ async def main():
                 status = ""
                 if curr_temp > 28:
                     status = "on"
-                    url = "http://" + ip_list[i] + ":" + port_list[i] + "/peer/putData?sensorType=temperature&value=" + curr_temp - 5 + "&onOff=" + status
                 else:
                     status = "off"
-                    url = "http://" + ip_list[i] + ":" + port_list[i] + "/peer/putData?sensorType=temperature&value=28&onOff=" + status
-
-                
+                url = "http://" + ip_list[i] + ":" + port_list[i] + "/peer/putData?sensorType=temperature&value=" + str(curr_temp) + "&onOff=" + status + "&device=sensor"
+                print(url)
                 payload = {}
                 headers = {}
 
@@ -361,6 +357,7 @@ async def main():
 
             print("current room temperature: ", curr_temp)
             
+            ##################
             await send_telemetry_from_thermostat(device_client, temperature_msg1, val)
             await asyncio.sleep(3)
 

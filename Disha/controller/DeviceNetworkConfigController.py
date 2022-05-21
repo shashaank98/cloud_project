@@ -6,6 +6,7 @@ import json
 
 
 class DeviceNetworkConfigController(Resource):
+    # Return recipient device data after join
     def get(self, sender_id):
         device_mapping = DeviceMappingDao.get_device_mapping_by_sender_id(sender_id)
         if device_mapping is None or device_mapping.get('receiver_ids_list') is None:
